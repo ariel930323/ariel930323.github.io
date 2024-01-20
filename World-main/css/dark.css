@@ -1,0 +1,259 @@
+:root[data-theme="dark"] {
+  --bgColor: #212121;
+  --fontColor: #bdbdbd;
+}
+
+/* cool3d隧道 */
+
+body {
+  background-color: hsl(256, 100%, 5%);
+  font: 30px sans-serif;
+}
+canvas {
+  display: block;
+  position: absolute;
+  z-index: -1;
+}
+/* ************************ */
+@media (prefers-color-scheme: dark) {
+  body {
+    --bgColor: #212121;
+    --fontColor: #bdbdbd;
+  }
+
+  img,
+  video,
+  iframe {
+    filter: brightness(0.9);
+  }
+
+  .Name {
+    color: #fff;
+    text-shadow: 0 0 1.2rem rgb(1, 225, 255);
+  }
+
+  .main-nav-link:link,
+  .main-nav-link:visited {
+    color: #fff;
+  }
+}
+
+body {
+  /* background-image: url("../img/Scence-dark-1.webp"); */
+  margin: 0;
+  background-attachment: fixed;
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  --bgColor: #212121;
+  --fontColor: #bdbdbd;
+}
+
+img,
+video,
+iframe {
+  filter: brightness(0.9);
+}
+
+.Name {
+  color: #fff;
+  text-shadow: 0 0 1.2rem rgb(1, 225, 255);
+  text-align: center;
+}
+
+.main-nav-link:link,
+.main-nav-link:visited {
+  color: #fff;
+  text-shadow: 0 0 1.2rem rgb(1, 225, 255);
+}
+
+.main-nav-link:hover,
+.main-nav-link:active {
+  font-size: 2.4rem;
+  color: #ffffff;
+  text-shadow: 0 0 3rem rgb(1, 225, 255);
+}
+
+/* 深色模式按鈕 */
+.btnSwitchTheme {
+  padding: 0 1rem;
+}
+
+.btnSwitchTheme:hover {
+  background-color: rgba(249, 245, 245, 0.1);
+  padding: 0 1rem;
+  border-radius: 50%;
+}
+
+.icon-dark[name="sunny-outline"] {
+  display: none;
+  color: #402a52;
+}
+
+.icon-dark[name="moon-outline"] {
+  display: inline-block;
+  color: rgb(199, 247, 253);
+}
+
+.icon-mobile-nav {
+  color: #fff;
+}
+
+.sticky .header {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 38em) {
+  .main-nav {
+    background-color: rgba(0, 0, 0, 1);
+  }
+}
+
+.section-hero {
+  background-color: transparent;
+}
+
+/* about */
+.section-about {
+  background-color: transparent;
+}
+
+.about-title {
+  font-size: 2.8rem;
+  background-color: transparent;
+}
+
+/* coolbtu */
+
+.btn:link,
+.btn:visited {
+  background-color: transparent;
+  background-image: linear-gradient(180deg, #e1c9e600 0%, #cfc4ee00);
+  border-color: #c1beff;
+  border-style: solid;
+  color: #fff;
+  box-shadow: 0 0 1.2rem rgb(1, 225, 255);
+}
+
+.btn:hover,
+.btn:active {
+  background-color: transparent;
+  background-image: linear-gradient(180deg, #e1c9e600 0%, #cfc4ee00);
+  border-color: #f4e7ff;
+  border-style: solid;
+  color: #fff;
+  box-shadow: 0 0 2rem rgb(1, 225, 255);
+  text-shadow: 0 0 2rem rgb(1, 225, 255);
+}
+
+.heading-primary {
+  background-color: transparent;
+}
+
+.invert {
+  -webkit-filter: invert(0);
+}
+
+.section-content {
+  background-color: transparent;
+}
+
+.section-introduction {
+  background-color: transparent;
+}
+
+.section-description {
+  background-color: transparent;
+}
+
+.description-text {
+  color: #fff;
+}
+
+.section-card {
+  background-color: transparent;
+}
+
+.cards-wrapper,
+.cards {
+  background-color: transparent;
+}
+
+.des-title {
+  color: #e7c0e7;
+}
+
+.des-work-3 {
+  color: #fff;
+}
+
+.cards-wrapper::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  max-width: 1440px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    #ffffff00 30%,
+    #ffffff00 70%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  pointer-events: none;
+}
+
+.section-join {
+  background-color: transparent;
+}
+
+.list-item {
+  color: #fff;
+}
+
+.join-en,
+.join-zh-1,
+.join-zh-2 {
+  color: #fff;
+}
+
+.section-connection {
+  background-color: transparent;
+}
+
+.social-logo {
+  color: #e7c0e7;
+}
+
+.heading-secondary-dark {
+  color: #fff;
+}
+
+/*深色便利貼*/
+.sticky-notes .sticky-note a {
+  color: #212121;
+  background: rgba(240, 240, 240);
+  backdrop-filter: blur(5px);
+}
+
+.sticky-notes .sticky-note:nth-child(even) a {
+  color: #212121;
+  background: rgba(240, 240, 240);
+  backdrop-filter: blur(5px);
+}
+
+.sticky-notes .sticky-note:nth-child(3n) a {
+  color: #212121;
+  background: rgba(240, 240, 240);
+  backdrop-filter: blur(5px);
+}
+
+.sticky-notes .sticky-note p {
+  color: #212121;
+  font-size: 1.4rem;
+  padding: 0;
+}

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Abel&family=Noto+Serif+TC:wght@200;300;400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/try-1.css" />
+    <script defer src="js/try-2.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.0.5/gsap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="x-shader/x-fragment" id="fragmentShader">
+      varying vec2 vUv;
+      uniform float u_size;
+      uniform float u_ratio;
+      uniform float u_time;
+      uniform sampler2D u_texture;
+
+      float random (in vec2 st) {
+          return fract(sin(dot(st.xy, vec2(12.9898, 78.233)))*43758.5453123);
+      }
+      float noise (in vec2 st) {
+          vec2 i = floor(st);
+          vec2 f = fract(st);
+          float a = random(i);
+          float b = random(i + vec2(1.0, 0.0));
+          float c = random(i + vec2(0.0, 1.0));
+          float d = random(i + vec2(1.0, 1.0));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+      }
+      float fbm (in vec2 st) {
+          float value = 0.0;
+          float amplitude = .5;
+          float frequency = 0.;
+          for (int i = 0; i < 4; i++) {
+              value += amplitude * noise(st);
+              st *= 2.;
+              amplitude *= .5;
+          }
+          return value;
+      }
+
+
+      void main() {
+          vec2 uv = vUv;
+          uv.y /= u_ratio;
+
+          vec4 base = texture2D(u_texture, vUv);
+          float t = pow(3. * u_time, .9);
+
+          float edges_mask = max(.4, pow(length(vUv - vec2(.5)), .5));
+          float noise_mask = fbm(vec2(.01 * u_size * uv)) / edges_mask;
+          noise_mask -= .06 * length(base.rgb);
+
+          vec3 color = mix(base.rgb, vec3(0.), smoothstep(noise_mask - .15, noise_mask - .1, t));
+          vec3 fire_color = fbm(6. * vUv + .1 * t) * vec3(6., 1.4, .0);
+          color = mix(color, fire_color, smoothstep(noise_mask - .1, noise_mask - .05, t));
+          color -= .3 * fbm(3. * vUv) * pow(t, 4.);
+
+          float opacity = 1. - smoothstep(noise_mask - .01, noise_mask, t);
+
+          gl_FragColor = vec4(color, opacity);
+      }
+    </script>
+
+    <script type="x-shader/x-vertex" id="vertexShader">
+      varying vec2 vUv;
+      void main() {
+          vUv = uv;
+          gl_Position = vec4(position, 1.);
+      }
+    </script>
+    <!-- partial -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="https://unpkg.co/gsap@3/dist/gsap.min.js"></script>
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, 
+    initial-scale=1.0"
+    />
+    <meta name="ChronosGame" content="A small game recruitment website" />
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/queries.css" />
+    <link rel="stylesheet" href="css/dark.css" id="darkTheme" disabled />
+    <link rel="stylesheet" href="css/style-4.css" />
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+
+    <script defer src="js/script.js"></script>
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <!-- partial -->
+    <script src="js/script-4.js"></script>
+
+    <title>Chronos &mdash; World</title>
+
+    <!-- 特殊字體 -->
+    <svg
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      width="100%"
+      height="100%"
+      class="filterwrapper"
+    >
+      <defs>
+        <svg
+          id="glitchmask-r"
+          width="100%"
+          height="100%"
+          viewbox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
+          <line class="top-r" x1="0" y1="0" x2="100%" y2="0"></line>
+          <line class="bot-r" x1="0" y1="100%" x2="100%" y2="100%"></line>
+        </svg>
+        <svg
+          id="glitchmask-g"
+          width="100%"
+          height="100%"
+          viewbox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
+          <line class="top-g" x1="0" y1="0" x2="100%" y2="0"></line>
+          <line class="bot-g" x1="0" y1="100%" x2="100%" y2="100%"></line>
+        </svg>
+
+        <filter
+          color-interpolation-filters="sRGB"
+          id="filter"
+          width="100%"
+          heigth="100%"
+          x="0"
+          y="0"
+        >
+          <feFlood flood-color="black" result="black" />
+
+          <!-- red text start -->
+          <feFlood flood-color="red" result="REDTXT_FLOOD_10" />
+          <feComposite
+            operator="in"
+            in="REDTXT_FLOOD_10"
+            in2="SourceAlpha"
+            result="REDTXT_COMP_20"
+          />
+          <feOffset
+            in="SourceGraphic"
+            dx="-2"
+            dy="0"
+            result="REDTXT_OFFSET_30"
+          />
+          <feMerge result="REDTXT_MERGE_40">
+            <feMergeNode in="black" />
+            <feMergeNode in="REDTXT_COMP_20" />
+            <feMergeNode in="REDTXT_OFFSET_30" />
+          </feMerge>
+          <feImage
+            preserveAspectRatio="none"
+            id="mask-r"
+            result="REDTXT_IMG_50"
+            xlink:href="#glitchmask-r"
+          />
+          <feComposite
+            in2="REDTXT_IMG_50"
+            in="REDTXT_MERGE_40"
+            operator="out"
+            result="REDTXT_COMP_60"
+          />
+          <!-- red text end -->
+
+          <!-- green text start -->
+          <feFlood flood-color="limegreen" result="GREENTXT_FLOOD_10" />
+          <feComposite
+            operator="in"
+            in="GREENTXT_FLOOD_10"
+            in2="SourceAlpha"
+            result="GREENTXT_COMP_20"
+          />
+          <feOffset
+            in="SourceGraphic"
+            dx="2"
+            dy="0"
+            result="GREENTXT_OFFSET_30"
+          />
+          <feMerge result="GREENTXT_MERGE_40">
+            <feMergeNode in="black" />
+            <feMergeNode in="GREENTXT_COMP_20" />
+            <feMergeNode in="GREENTXT_OFFSET_30" />
+          </feMerge>
+          <feImage
+            preserveAspectRatio="none"
+            id="mask-g"
+            result="GREENTXT_IMG_50"
+            xlink:href="#glitchmask-g"
+          />
+          <feComposite
+            in2="GREENTXT_IMG_50"
+            in="GREENTXT_MERGE_40"
+            operator="out"
+            result="GREENTXT_COMP_60"
+          />
+          <!-- green text end -->
+
+          <feMerge result="MERGE_10">
+            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="REDTXT_COMP_60" />
+            <feMergeNode in="GREENTXT_COMP_60" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+  </head>
+
+  <!-- 內文 -->
+
+  <body>
+    <canvas id="c"></canvas>
+    <header class="header">
+      <!-- nav-open -->
+      <div class="Name">
+        <a> <ion-icon name="sunny-outline" class="non"></ion-icon></a>
+        <a>CHRONOS</a>
+        <a class="btnSwitchTheme" id="btnSwitchTheme">
+          <ion-icon name="moon-outline" class="icon-dark"></ion-icon>
+          <ion-icon name="sunny-outline" class="icon-dark"></ion-icon
+        ></a>
+      </div>
+
+      <!-- 導航 -->
+      <nav class="main-nav">
+        <ul class="main-nav-list">
+          <li><a class="main-nav-link" href="#about">關於我們</a></li>
+          <li>
+            <a class="main-nav-link link--2-row" href="#con">企劃內容</a>
+          </li>
+          <li>
+            <a class="main-nav-link" href="#planning">招募說明</a>
+          </li>
+          <li><a class="main-nav-link" href="#cta">加入我們</a></li>
+          <li>
+            <a class="main-nav-link nav-cta" href="#connection">聯絡資訊</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- 在介面縮小時的導航菜單按鈕設置 -->
+      <button aria-label="Submit Form" class="btn-mobile-nav">
+        <ion-icon class="icon-mobile-nav" name="menu-outline"></ion-icon>
+        <ion-icon class="icon-mobile-nav" name="close-outline"></ion-icon>
+      </button>
+    </header>
+
+    <!-- 主要內容 -->
+    <main>
+      <div class="header-test"></div>
+      <section class="section-hero">
+        <div class="hero">
+          <div class="hero-text-box">
+            <!-- 特殊字-dark -->
+            <figure class="glitch-filter-example heading-primary invert">
+              <text
+                class="glitch-filter-example__filtered-text"
+                y="50%"
+                text-anchor="middle"
+                x="50%"
+                transform="translate(0 34)"
+              >
+                歡迎來到Chronos。<br /><br />
+                面對「認知外」的世界與故事，你會選擇毀滅還是適應？
+              </text>
+            </figure>
+            <!-- <br>使用的時候注意一下 -->
+            <!-- <p class="hero-description">
+              歡迎來到Chronos。<br />
+              您可能會開始思考「這是什麼情況?」
+              別擔心，因為您再如何絞盡腦汁也無法用小巧精緻的腦袋明瞭這一切。
+              只需要牢記以下一點 :<br />
+              您已經死了——由衷希望您明白「死亡」這個單詞的意義。
+              無法歸屬的靈魂，也就是您，榮幸或不幸地被帶到了這裡。
+              接下來請您睜開雙眼，與此同時，也別忘記自己的身分。
+            </p> -->
+
+            <div class="hero-btn">
+              <a href="https://crchronos14.github.io/Story/" class="btn"
+                >前導遊戲</a
+              >
+            </div>
+
+            <p class="delivered-text">
+              你以為你擁有選擇，但其實路走到底，<span
+                >所有人的歸宿都在那裏</span
+              >
+              。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="container text-center" id="about">
+        <span class="subheading-1">ABOUT</span>
+        <h2 class="heading-secondary-1">關於</h2>
+      </div>
+
+      <section class="section-about">
+        <div class="container">
+          <!-- <span class="subheading">ABOUT</span>
+          <h2 class="heading-secondary">關於</h2> -->
+
+          <div class="about-text-box">
+            <p class="about-text">
+              Chronos
+              是一個遊戲製作的企劃，目前正在製作解謎劇情向的像素RPG遊戲。成員大多是學生，非業界或相關行業的工作者，儘管如此，<strong>這個企劃不只是興趣導向的製作</strong>。如果你也有興趣和熱忱，希望你也能投入其中，一同做出很棒的遊戲！
+              <br />BY CR全體人員。 <br /><br />
+            </p>
+            <p class="about-title">遊戲內容</p>
+
+            <p>
+              在只有死者的世界裡，你將扮演一名「玩家」
+              從故事的演繹中尋找通往「真相」的道路。隱藏的是非善惡將因你的意識決定，作為扮演「玩家」的酬勞，你擁有實現心願的可能性、而實現與否與你所有的行動和思考息息相關。
+              <br /><br />
+            </p>
+            <p class="about-title">遊戲類型</p>
+            <p>
+              主要模式為像素RPG解謎 與文字冒險遊戲（AVG）。
+              <br /><br />
+            </p>
+            <p class="about-title">遊戲方法</p>
+            <p>
+              玩家們操控Player探索被稱為Chronos
+              世界中的空間，透過探索空間中的物品與和其中的NPC交流互動了解「CR」本身的世界觀，並創造出屬於自己的故事。
+              <br /><br />
+            </p>
+          </div>
+          <p class="hero-description">創作 X 思考 X 開發</p>
+        </div>
+      </section>
+
+      <div class="container text-center" id="con">
+        <span class="subheading-1">INTRODUCTION</span>
+        <h2 class="heading-secondary-1">企劃內容</h2>
+      </div>
+
+      <section class="section-content" id="Introduction">
+        <div class="container text-center">
+          <p class="about-text-box" id="ani">
+            時間正在衰敗，悄聲和無限一同墜落。<br />
+            無限的另一頭有結束，結束是下一個墜落，墜落是下一個無限。<br />
+            無限像是望不到盡頭的大海，海浪拍打著您的身體，它們不會停歇。<br />
+            <br />
+            九位，他們對您的到來並不意外。<br />
+            作為鮮美的初來乍到者，您被稱呼為「玩家」。<br />
+          </p>
+        </div>
+        <div class="container text-center">
+          <p class="about-text-box ani1" id="ani-1">
+            他們說這是「系統」，是獲得新生活的地方。 <br />
+            完善的醫療措施，您不需要為病痛煩惱。 <br />
+            豐富的娛樂設施，您不需要為悲傷擔憂。 <br />
+            潔淨的私人空間，您不需要為吵雜苦惱。 <br />
+            多樣的美食饗宴，您不需要為飢餓不快。 <br />
+            生機的清翠花園，您不需要為呼吸發愁。 <br />
+            這裡是完美的，如果您產生了焦慮、不安、恐慌，請無視此種情緒。
+            <br /><br />
+            他們說這裡有「副本」，這是一個又一個沉浸式的故事。<br />
+            ......。 <br />
+            ......。 <br />......。 <br />現在還不急著談這個。 <br />
+            <br />
+            他們說這是「積分」，這是支撐您的根基。
+            <br />您可以使用其兌換佳餚。 <br />
+            您可以使用其兌換快樂。 <br />您可以使用其免於一切危難。
+          </p>
+        </div>
+        <div class="container text-center">
+          <p class="about-text-box ani2" id="ani-2">
+            他們說這裡是「屬於死者的世界」，您心中生出了一股違和。<br />
+            溫熱的記憶從百骸湧現，心臟急速的收縮，脈搏紊亂的跳動，耳邊的嗡鳴聲好像讓你聽見了不存在的笛聲。<br />
+            但卻倏地靜止。<br />
+            ......。<br />
+            ......。<br />
+            ......。<br />
+            他們說您是神選之人。<br />
+          </p>
+        </div>
+      </section>
+
+      <section class="section-introduction">
+        <div class="container">
+          <span class="subheading" id="dungeom">DUNGEOM</span>
+          <h2 class="heading-secondary">副本簡介</h2>
+        </div>
+
+        <div class="container grid grid--2-cols mar">
+          <div class="item">
+            <img
+              src="img/mental_hospital.jpg"
+              class="des-img"
+              alt="Event and Script Planning Group"
+            />
+
+            <div class="item-content">
+              <div class="des-tag"><span class="tag">特殊精神病院</span></div>
+
+              <p class="subtitle"><spans>精神病院</spans>—卡特蘭精神病院</p>
+              <p class="sub-content">1970 年，美國。</p>
+              <p class="sentence">
+                「……切記，我親愛的孩子，你能相信的只有證據。」
+              </p>
+              <p class="sub-content">薄如蟬翼的信紙上如此寫道。</p>
+              <p class="sub-content">
+                私自開發的實驗藥物。從彼此眼中看見了同樣的危機意識。
+              </p>
+              <p class="sub-content">
+                那不應該存在的！胃部的翻騰卻彰顯著最深處的恐懼，從未見過的生物卻嚎叫著。
+                接下來、接下來應該做什麼——為什麼不記得了？喉嚨深處的窒息感正在叫囂。
+                他遞出了一封信。<br />
+                你看見了他眼中的悲傷。<br /><br />
+              </p>
+            </div>
+          </div>
+          <div class="item">
+            <img
+              src="img/girl-item.jpg"
+              class="des-img"
+              alt="Event and Script Planning Group"
+            />
+
+            <div class="item-content item-content-2">
+              <div class="des-tag"><span class="tag">大正校園</span></div>
+
+              <p class="subtitle"><spans>大正校園</spans>—白百合女子學院</p>
+
+              <p class="sentence">「以培養健全的淑女為目標。」</p>
+              <p class="sub-content">背景設立於 1912 至 1926 日本大正年間。</p>
+
+              <p class="sub-content">——塵埃，少女與寧靜的書庫中。</p>
+              <p class="sub-content">
+                內心隱瞞的情感、本能發顫的手腳、流溪牽動著心中的痛楚。
+              </p>
+              <p class="sub-content">——綻放的微笑，願它能持續守護你。</p>
+              <p class="sub-content">
+                您是否能夠想像，被怨恨的蠹蟲啃食著的心。<br />
+                因為「我」不會放過你。<br />
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container text-center" id="planning">
+        <span class="subheading-1">ABOUT</span>
+        <h2 class="heading-secondary-1">招募資訊</h2>
+      </div>
+      <!-- 
+      <section class="section-description" id="planning">
+        說明
+        <div class="container description-box">
+          <div class="description-text container">
+            如果你對於加入我們有點興趣
+          </div>
+          <div class="description-dange"></div>
+        </div>
+      </section> -->
+      <!-- 1111111111111111111111111111111111111111111111111111 -->
+      <section class="about-work">
+        <ul class="slider-4">
+          <li class="item-work next-4" style="background-color: black">
+            <div class="content">
+              <h2 class="title">宣傳組</h2>
+              <p class="description">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Tempore fuga voluptatum, iure corporis inventore praesentium
+                nisi. Id laboriosam ipsam enim.
+              </p>
+              <button>Read More</button>
+            </div>
+          </li>
+          <li
+            class="item-work next-4"
+            style="background-image: url(img/tit-0.png)"
+          >
+            <div class="content">
+              <h2 class="title">組別介紹</h2>
+              <p class="description">
+                本遊戲製作的分工組別有策畫組、美術組、開發組、音樂組。
+              </p>
+            </div>
+          </li>
+          <li
+            class="item-work next-4"
+            style="background-image: url(img/tit-1.png)"
+          >
+            <div class="content">
+              <h2 class="title">策畫</h2>
+              <p class="description">
+                構想遊戲架構、世界觀等相關基礎設定。
+                規劃其關卡等架構並撰寫相關設定。 規劃遊戲宣傳相關。
+              </p>
+              <button class="modal-toggle" data-modal-target="modal3">
+                Read More
+              </button>
+            </div>
+          </li>
+          <li
+            class="item-work next-4"
+            style="background-image: url(img/tit-2.png)"
+          >
+            <div class="content">
+              <h2 class="title">美術</h2>
+              <p class="description">
+                根據企劃組的提案，設計或繪出對應物件，含括插圖、背景、人物展示、角色外形及遊戲物件等。
+              </p>
+              <button class="modal-toggle" data-modal-target="modal2">
+                Read More
+              </button>
+            </div>
+          </li>
+          <li
+            class="item-work next-4"
+            style="background-image: url(img/tit-3.png)"
+          >
+            <div class="content">
+              <h2 class="title">開發</h2>
+              <p class="description">
+                根據策畫組的提案，並利用美術組產出之相關物件，設計並製作對應之網頁排版、遊戲等，具體實現企劃內容，負責所有程式碼相關的業務，並確保遊戲流暢度。
+              </p>
+              <button class="modal-toggle" data-modal-target="modal1">
+                Read More
+              </button>
+            </div>
+          </li>
+
+          <li
+            class="item-work next-4"
+            style="background-image: url(img/tit-4.png)"
+          >
+            <div class="content">
+              <h2 class="title">音樂</h2>
+              <p class="description">
+                根據實際製出的遊戲、網頁等，為其搭配合理音效，含括遊戲配樂、音效等。
+              </p>
+              <button class="modal-toggle" data-modal-target="modal4">
+                Read More
+              </button>
+            </div>
+          </li>
+        </ul>
+
+        <!-- 開發組內容 -->
+
+        <div class="modal modal-closed" id="modal1" aria-role="dialog">
+          <h1>開發組</h1>
+          <p>【遊戲開發】</p>
+          <p>
+            工作內容：協助開發企劃遊戲、和非技術人員討論需求並且實作且能夠獨自完成交辦的工作項目。
+          </p>
+          <ul>
+            <li><a>具有unity開發經驗</a></li>
+            <li><a>熟悉unity編輯器與Git 、C#</a></li>
+            <li><a>具有自學能力，能看懂各式資料</a></li>
+            <li><a>願意多溝通，能夠與他人合作，勇於表達意見、想法</a></li>
+          </ul>
+
+          <button class="modal-close">關閉</button>
+        </div>
+
+        <div class="modal modal-closed" id="modal2" aria-role="dialog">
+          <h1>美術組</h1>
+          <p>【場景設計】</p>
+          <p>
+            工作內容：依照初步場景內容設定，編排家具、動線等。
+            也包含家具裝潢繪製設計。
+          </p>
+
+          <p>【CG圖繪製】</p>
+          <p>
+            工作內容：根據劇情所需繪製需要特別演出的部分，能夠設計／繪製出大圖包含背景的人員。<br>
+            ◆前置設計人員： 屬於畫面設計，就是畫草稿訂方向。 <br>
+            ◆完稿繪製人員：屬於跟上述給的草稿跟所有統合意見做一個完稿的動作。
+          </p>
+
+          <p>【人物像素】</p>
+          <p>
+            工作內容：將遊戲中的人物轉換成4面像素圖。 包含配飾、裝備等。
+          </p>
+
+          <p>【場景像素】</p>
+          <p>工作內容：將場景設計轉換成像素圖。 包含家具、裝潢等。</p>
+
+          <p>【場景設計】</p>
+          <p>
+            工作內容：依照初步場景內容設定，編排家具、動線等。
+            也包含家具裝潢繪製設計。
+          </p>
+
+          <button class="modal-close">關閉</button>
+        </div>
+
+        <div class="modal modal-closed" id="modal3" aria-role="dialog">
+          <h1>策畫組</h1>
+          <p>【系統策畫】</p>
+          <p>工作內容：撰寫遊戲內系統所需細部功能，拆分系統工程。</p>
+          <ul>
+            <li><a>對各式RPG遊戲具有熱忱</a></li>
+            <li><a>了解RPG遊戲內各式遊戲系統與機制</a></li>
+            <li><a>願意多溝通，能夠與他人合作，勇於表達意見、想法</a></li>
+          </ul>
+
+          <p>【關卡策畫】</p>
+          <p>
+            工作內容：設定遊戲包括主、支線與副本之關卡架構、內容基礎設定。包含設定、大綱、遊玩方式、地圖等。
+          </p>
+          <ul>
+            <li><a>對各式RPG遊戲具有熱忱</a></li>
+            <li><a>願意多溝通，能夠與他人合作，勇於表達意見、想法</a></li>
+          </ul>
+
+          <p>【數值策畫】</p>
+          <p>工作內容：制訂遊戲中各項參數，維持遊戲平衡與體驗。</p>
+          <ul>
+            <li><a>對各式RPG遊戲具有熱忱</a></li>
+            <li><a>願意多溝通，能夠與他人合作，勇於表達意見、想法</a></li>
+          </ul>
+
+          <p>【主線與草稿】</p>
+          <p>
+            主線分成：<br />
+
+            ◆系統故事<br />
+            工作內容：主人公在系統中的故事發想，為最主要故事，包含了劇情流程安排、對話選項、部分彩蛋安排。<br />
+            ◆副本<br />
+            工作內容：副本內皆為獨立故事，構想副本內主要故事、世界觀、人物角色、主軸核心等等
+          </p>
+          <ul>
+            <li><a>有玩過遊戲或是參與企劃的經驗，需要作品集或oc介紹</a></li>
+          </ul>
+
+          <p>【世界觀細節設定】</p>
+          <p>工作內容：主要世界觀之架構與細則設定與世界觀整理、統整</p>
+          <ul>
+            <li><a>有玩過遊戲或是參與企劃的經驗，需要作品集或oc介紹</a></li>
+          </ul>
+
+          <p>【文手】</p>
+          <p>工作內容：書寫所有文案、對話、選項、但不參與構想與討論。</p>
+          <ul>
+            <li><a>有玩過遊戲或是參與企劃的經驗，需要作品集或oc介紹</a></li>
+          </ul>
+
+          <p>【評委】</p>
+          <p>工作內容：不參與任何構想與書寫，給予建議和抓出劇情上的問題。</p>
+          <ul>
+            <li>
+              <a>對於遊戲有評論、想法，需要較快的回覆速度及完善的表達能力</a>
+            </li>
+          </ul>
+
+          <button class="modal-close">關閉</button>
+        </div>
+
+        <div class="modal modal-closed" id="modal4" aria-role="dialog">
+          <h1>音樂組</h1>
+          <p>【組長】</p>
+          <p>工作內容：製作場景配樂及尋找適合的遊戲音效</p>
+          <ul>
+            <li><a>具備配樂的創作經驗</a></li>
+            <li><a>對聲音／音樂有一定的敏感度</a></li>
+            <li><a>了解各種音效與配樂帶來的效果與適合應用的時機</a></li>
+            <li><a>具備規劃進度、流程與分工的能力</a></li>
+            <li><a>善於溝通</a></li>
+            <li><a>有一定的時間能參與企劃</a></li>
+          </ul>
+
+          <p>【成員】</p>
+          <p>工作內容：製作場景配樂及尋找適合的遊戲音效</p>
+          <ul>
+            <li><a>具備配樂的創作經驗</a></li>
+            <li><a>對聲音／音樂有一定的敏感度</a></li>
+            <li><a>了解各種音效與配樂帶來的效果與適合應用的時機</a></li>
+          </ul>
+
+          <button class="modal-close">OK</button>
+        </div>
+
+        <!-- <div id="content1" class="modal-content">Content for Button 1</div>
+        <div id="content2" class="modal-content">Content for Button 2</div>
+        <div id="content3" class="modal-content">Content for Button 3</div>
+        <div id="content4" class="modal-content">Content for Button 4</div> -->
+
+        <div class="modal-overlay"></div>
+        <nav class="nav-4">
+          <ion-icon class="btn-4 prev-4" name="arrow-back-outline"></ion-icon>
+          <ion-icon
+            class="btn-4 next-4"
+            name="arrow-forward-outline"
+          ></ion-icon>
+        </nav>
+      </section>
+
+      <!-- 111111111111111111111111111111111111111111111111111111 -->
+      <!-- 組別介紹 -->
+      <section class="workwork" style="background-color: white">
+        <div class="container">
+          <div class="about-text-box">
+            <div class="container text-center">
+              <span class="item-subheading">ABOUT</span>
+              <p class="item-title">工作模式與工具</p>
+            </div>
+            <p>
+              工作辦法以各組組長的工作模式為主，以下為整體參考。<br />
+              一個月一次統整會議，進行小組與整體之工作進度匯報與下個月的規劃。<br />
+              組長以月為單位進行會議計劃與工作分配的規劃。<br />
+              工作 ⟺ 開會（檢查進度 ⇢ 討論 ⇢ 分配新工作） <br />認領工作 ⇢
+              和負責人溝通 ⇢ 確認工作並完成 ⇢ 給負責人審稿<br /><br />
+            </p>
+            <p class="about-title">工具</p>
+            <p>以DC和Google雲端為主，其餘為輔助工具。</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="container text-center" id="cta">
+        <span class="subheading-1">JOIN US</span>
+        <h2 class="heading-secondary-1">加入我們</h2>
+      </div>
+
+      <section class="section-join">
+        <div class="container">
+          <div class="join-grid">
+            <div>
+              <div class="join-right">
+                <span class="item-subheading join-en">PROCESS</span>
+                <p class="item-title join-zh-1">招募流程</p>
+              </div>
+            </div>
+            <div>
+              <ul class="list">
+                <li class="list-item">- 詳閱所有招募相關資訊</li>
+                <li class="list-item">- 準備好作品集</li>
+                <li class="list-item">- 填寫表單資料</li>
+                <li class="list-item">- 耐心等待 3 - 14 天的一階結果</li>
+                <li class="list-item">- 一階作品集 作品集 90% 表單內容 10%</li>
+                <li class="list-item">- 二階面試</li>
+              </ul>
+            </div>
+          </div>
+          <div class="join-grid">
+            <div>
+              <div class="join-right">
+                <span class="item-subheading join-en">NOTICE</span>
+                <p class="item-title join-zh-1">注意事項</p>
+              </div>
+            </div>
+            <div>
+              <ul class="list">
+                <li class="list-item">- 無償工作 為愛發電</li>
+                <li class="list-item">- 你可以爽快選擇開始或結束</li>
+                <li class="list-item">- 但請記得你的責任心</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="join-grid">
+            <div>
+              <div class="join-right">
+                <span class="item-subheading join-en">RULES</span>
+                <p class="item-title join-zh-1">行為守則</p>
+              </div>
+            </div>
+            <div>
+              <ul class="list">
+                <li class="list-item">- 尊重他人，保持友善和禮貌。</li>
+                <li class="list-item">- 避免使用冒犯性的言語或侮辱他人。</li>
+                <li class="list-item">- 保護他人的隱私和個人資訊。</li>
+                <li class="list-item">- 遵守社群的規則和指導方針。</li>
+                <li class="list-item">- 和平解決爭議或衝突。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="container">
+            <div class="jopn-text-box"></div>
+            <div class="hero-btn">
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSee8XFDE2LxJVmgkAul1usiGzs7EBKrllxApRq39nCYzTxKdw/viewform?usp=sf_link"
+                class="btn"
+                target="_blank"
+                rel="noopener"
+                >填寫表單</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="section-connection">
+      <div class="container">
+        <span class="subheading">CONNECTION</span>
+        <h2 class="heading-secondary heading-secondary-dark" id="connection">
+          聯繫方式
+        </h2>
+      </div>
+
+      <div class="container grid grid--3-cols">
+        <div class="social">
+          <a href="#">
+            <ion-icon class="social-logo" name="logo-instagram"></ion-icon
+          ></a>
+          <p class="social-text">官方IG</p>
+        </div>
+        <div class="social">
+          <a href="#"
+            ><ion-icon class="social-logo" name="logo-facebook"></ion-icon
+          ></a>
+          <p class="social-text">官方臉書</p>
+        </div>
+        <div class="social">
+          <a href="#">
+            <img src="img/LOGO-web-link.png" class="web-logo" title="123" />
+          </a>
+          <p class="social-text">官網整頓中</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,300 @@
+/* ************************* */
+/* below 1344ps(smaller desktops)  */
+/* ************************* */
+
+@media (max-width: 84em) {
+  .hero {
+    max-width: 120rem;
+  }
+
+  .sticky-notes .sticky-note a {
+    width: 14rem;
+    height: 14rem;
+  }
+}
+
+@media (max-width: 69em) {
+  .hero-description {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 50em) {
+  .grid {
+    row-gap: 4.8rem;
+  }
+
+  .grid--4-cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 38em) {
+  /* ************************* */
+  /* Navigation  */
+  /* ************************* */
+
+  .modal {
+    opacity: 1;
+    transform: translateY(5%);
+  }
+
+  #modal1,
+  #modal2,
+  #modal3,
+  #modal4,
+  #modal5,
+  #modal6 {
+    max-width: 1000px;
+    max-height: 90vh;
+  }
+
+  .btn-mobile-nav {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(1rem, 0);
+    z-index: 2;
+  }
+
+  .sticky .btn-mobile-nav {
+    transform: translate(1rem, 0.5rem);
+  }
+
+  .main-nav {
+    background-color: rgba(256, 256, 256, 1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    transform: translateX(100%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.5s ease-in;
+
+    /* /* 1)hide */
+    opacity: 0;
+    /* 2)滑鼠和點擊無法作用 */
+    pointer-events: none;
+    /* 3)對閱讀文件隱藏 */
+    visibility: hidden;
+
+    z-index: 1;
+  }
+
+  .nav-open .main-nav {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .nav-open .icon-mobile-nav[name="close-outline"] {
+    display: block;
+  }
+
+  .nav-open .icon-mobile-nav[name="menu-outline"] {
+    display: none;
+  }
+
+  .main-nav-list {
+    padding: 4.8rem;
+    flex-direction: column;
+    gap: 4.8rem;
+  }
+
+  .dropdown-content a {
+    font-size: 2.4rem;
+  }
+
+  .main-nav-link:link,
+  .main-nav-link:visited {
+    font-size: 3rem;
+  }
+
+  /* ************************* */
+  /* Phone  1*/
+  /* ************************* */
+
+  .heading-primary {
+    font-size: 2.4rem;
+    min-width: 200px;
+  }
+  .sticky .header {
+    height: 6.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sticky .Name a {
+    padding: 0 1.2rem;
+  }
+
+  .Name a {
+    padding: 0 1.2rem;
+  }
+
+  .sticky .Name {
+    margin-top: 0;
+  }
+
+  .container {
+    padding: 0 1.6rem;
+  }
+  .grid {
+    row-gap: 4.8rem;
+  }
+
+  .grid--3-cols {
+    gap: 0;
+  }
+
+  .grid--2-cols,
+  .grid--3-1-cols,
+  .grid--4-cols {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  /* 便利貼大小 */
+
+  .sticky-notes .sticky-note a {
+    width: 22rem;
+    height: 22rem;
+  }
+
+  /* logo */
+
+  .social-logo,
+  .web-logo {
+    width: 4.8rem;
+    height: 4.8rem;
+  }
+
+  .social-logo:hover {
+    width: 5.6rem;
+    height: 5.6rem;
+  }
+
+  .btnSwitchTheme {
+    float: right;
+  }
+
+  /* 副本介紹圖文順序 */
+
+  .parallax-container:nth-child(2) {
+    grid-row: 1;
+  }
+
+  /* 卡片 */
+
+  .card-title {
+    font-size: 3.2rem;
+  }
+  .cards {
+    position: absolute;
+    top: 15px;
+    left: 20%;
+    transform: translateX(-50px);
+    display: flex;
+    flex-direction: row;
+    width: 2600px;
+    justify-content: space-between;
+  }
+
+  .card {
+    width: 440px;
+  }
+
+  .item-content {
+    padding: 2rem;
+  }
+
+  .cards-wrapper::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      rgba(256, 256, 256, 0.3) 0%,
+      #ffffff00 30%,
+      #ffffff00 70%,
+      rgba(256, 256, 256, 0.3) 100%
+    );
+    pointer-events: none;
+  }
+
+  .des-works {
+    gap: 1rem;
+  }
+
+  .des-work {
+    font-size: 1.2rem;
+  }
+
+  .des-work :first-child {
+    padding-top: 1.2rem;
+  }
+
+  /* about */
+  .about-text-box {
+    font-size: 1.6rem;
+    padding: 0;
+  }
+
+  .item-content-2 {
+    padding-right: 2rem;
+  }
+
+  .list-item {
+    font-size: 1.4rem;
+  }
+
+  .join-zh-1 {
+    font-size: 2.4rem;
+  }
+
+  .join-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .join-right {
+    float: left;
+  }
+
+  .join-grid:nth-child(2) {
+    margin-left: 0;
+    /* align-self: self-end; */
+  }
+
+  /* 副本 */
+  .subtitle {
+    font-size: 2rem;
+  }
+
+  .sentence {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 24em) {
+  .card-title {
+    font-size: 2.4rem;
+  }
+}
+
+@media (max-width: 22em) {
+  .card-title {
+    font-size: 2rem;
+  }
+}
