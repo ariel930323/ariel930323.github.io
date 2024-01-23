@@ -2016,10 +2016,19 @@ body {
   transition: all 0.3s;
   z-index: 9;
 }
+
+
 .modal button:first-of-type {
   margin-right: 10px;
-  color:#cacaca;
+  color: #8f8f8f;
+  background-color: #00000000;
+  border: #00000000;
   }
+
+  .modal button:hover {
+    margin-right: 10px;
+    color: #555555;
+    }
   
 
 .modal-closed {
@@ -2027,6 +2036,7 @@ body {
   transform: translateY(-15px);
   
 }
+
 
 /* 留意新增的modal樣式 */
 #modal1,
