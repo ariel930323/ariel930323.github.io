@@ -180,7 +180,20 @@ iframe {
 }
 .anim {
     animation: show1 0.75s ease-out 1s forwards;
+}
+
+@keyframes show1 {
+  0% {
+    filter: blur(4px);
+    transform: translateY(calc(20% + 75px));
+    color: transparent;
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
     color: #fff;
+  }
 }
 
 
