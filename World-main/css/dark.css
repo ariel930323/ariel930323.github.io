@@ -172,6 +172,18 @@ iframe {
   color: #fff;
 }
 
+.about-text-box {
+    padding: 0 4.8rem 4.8rem 4.8rem;
+    font-size: 1.8rem;
+    line-height: 4.8rem;
+    color: transparent;
+}
+.anim {
+    animation: show1 0.75s ease-out 1s forwards;
+    color: #fff;
+}
+
+
 .section-card {
   background-color: transparent;
 }
