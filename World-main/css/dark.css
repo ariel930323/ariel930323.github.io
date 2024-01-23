@@ -172,29 +172,6 @@ iframe {
   color: #fff;
 }
 
-.about-text-box {
-    padding: 0 4.8rem 4.8rem 4.8rem;
-    font-size: 1.8rem;
-    line-height: 4.8rem;
-    color: transparent;
-}
-.anim {
-    animation: show1 0.75s ease-out 1s forwards;
-}
-
-@keyframes show1 {
-  0% {
-    filter: blur(4px);
-    transform: translateY(calc(20% + 75px));
-    color: transparent;
-  }
-
-  100% {
-    opacity: 1;
-    filter: blur(0);
-    color: #fff;
-  }
-}
 
 
 .section-card {
